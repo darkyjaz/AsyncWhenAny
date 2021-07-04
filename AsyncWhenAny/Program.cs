@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace AsyncWhenAny {
     class Program {
         static async Task Main(string[] args) {
+            // Needs to await or else Main finished and program ends
             await SumPageSizeAsync();
         }
 
@@ -22,7 +23,9 @@ namespace AsyncWhenAny {
             List<Task<int>> download_tasks = download_tasks_query.ToList();
 
             int total = 0;
+            // This is ok for a small number of tasks. There are more efficient approaches for a large # of tasks.
             while (download_tasks.Any()) {
+                // await a call to WhenAny to find first task that has finished its download
                 Task<int> finished_task = await Task.WhenAny(download_tasks);
                 download_tasks.Remove(finished_task);
                 // await to retrieve the length of the downloaded site
@@ -45,7 +48,7 @@ namespace AsyncWhenAny {
          };
 
         static readonly IEnumerable<string> s_urlList = new string[] {
-                    "https://docs.microsoft.com",
+                    "https://youtube.com",
                     "https://docs.microsoft.com/aspnet/core",
                     "https://docs.microsoft.com/azure",
                     "https://docs.microsoft.com/azure/devops",
